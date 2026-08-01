@@ -1,3 +1,4 @@
+from herokutl import events
 from .. import loader, utils
 
 
@@ -7,7 +8,7 @@ class WelcomeMod(loader.Module):
 
     strings = {
         "name": "Welcome",
-        "cfg_text": "текст приветствия. Используй {name} - туда подставится имя нового участника.",
+        "cfg_text": "текст приветствия. используй {name} - туда подставится имя нового участника.",
         "set_success": "текст приветствия обновлён!",
         "current_text": "текущий текст приветствия:\n\n{text}",
     }
@@ -24,27 +25,27 @@ class WelcomeMod(loader.Module):
     async def client_ready(self, client, db):
         self.client = client
         self.db = db
+        client.add_event_handler(self._on_chat_action, events.ChatAction())
 
     def _enabled_chats(self):
         return self.db.get("WelcomeMod", "enabled_chats", [])
 
-    @loader.watcher(chat_action=True)
-    async def watcher(self, message):
-        if not (getattr(message, "user_joined", False) or getattr(message, "user_added", False)):
+    async def _on_chat_action(self, event):
+        if not (getattr(event, "user_joined", False) or getattr(event, "user_added", False)):
             return
 
-        if utils.get_chat_id(message) not in self._enabled_chats():
+        if utils.get_chat_id(event) not in self._enabled_chats():
             return
 
-        user = await message.get_user()
+        user = await event.get_user()
         name = utils.escape_html(user.first_name or "друг")
 
         text = self.config["welcome_text"].format(name=name)
 
         await self.client.send_message(
-            message.chat_id,
+            event.chat_id,
             text,
-            reply_to=message.id,
+            reply_to=event.id,
         )
 
     async def setwelcomecmd(self, message):
@@ -65,7 +66,7 @@ class WelcomeMod(loader.Module):
         chat_id = utils.get_chat_id(message)
 
         if chat_id in chats:
-            await utils.answer(message, "ℹ️ В этом чате приветствие уже включено")
+            await utils.answer(message, "в этом чате приветствие уже включено")
             return
 
         chats.append(chat_id)
