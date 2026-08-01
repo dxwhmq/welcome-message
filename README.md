@@ -11,7 +11,7 @@ class WelcomeMod(loader.Module):
         "name": "Welcome",
         "cfg_text": "текст приветствия. Используй {name} - туда подставится имя нового участника.",
         "set_success": "текст приветствия обновлён!",
-        "current_text":  текущий текст приветствия:\n\n{text}",
+        "current_text":  "текущий текст приветствия:\n\n{text}",
     }
 
     def __init__(self):
