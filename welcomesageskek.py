@@ -34,7 +34,11 @@ class WelcomeMod(loader.Module):
 
         text = self.config["welcome_text"].format(name=name)
 
-        await message.reply(text)
+        await self.client.send_message(
+            message.chat_id,
+            text,
+            reply_to=message.id,
+        )
 
     async def setwelcomecmd(self, message):
         args = utils.get_args_raw(message)
