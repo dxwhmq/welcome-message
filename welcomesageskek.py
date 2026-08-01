@@ -45,7 +45,7 @@ class WelcomeMod(loader.Module):
         await self.client.send_message(
             event.chat_id,
             text,
-            reply_to=event.id,
+            reply_to=event.action_message.id if event.action_message else None,
         )
 
     async def setwelcomecmd(self, message):
